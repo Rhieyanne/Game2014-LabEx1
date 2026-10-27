@@ -1,23 +1,14 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+// Play / Play Again button
 public class StartButtonBehaviour : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public AudioClip clickSound;
 
     public void OnStartButtonClick()
     {
-        Debug.Log("Button Clicked!");
+        SoundFX.Play(clickSound);
         SceneManager.LoadScene("Play");
     }
 }
