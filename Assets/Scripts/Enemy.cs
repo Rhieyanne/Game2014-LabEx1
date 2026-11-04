@@ -13,6 +13,10 @@ public class Enemy : MonoBehaviour
     public int points = 100;
     public float radius = 0.5f;  // hit circle size
 
+    [Header("Bumping Into The Player")]
+    public int contactDamage = 1;  // lives the player loses for running into it (0 = harmless)
+    public bool dieOnContact = true;  // blows up on impact - no points, you crashed into it
+
     [Header("Steering")]
     public float acceleration = 6f;  // how fast it can change direction
 
@@ -58,9 +62,30 @@ public class Enemy : MonoBehaviour
             sprite.color = flashTimer > 0f ? Color.red : normalColor;
         }
 
+        if (IsDead) return;
+
+        CheckHitPlayer();
+
         // delete it once it's off screen
         if (ScreenBounds.IsOffscreen(transform.position))
             Destroy(gameObject);
+    }
+
+    // enemy vs player collision - same circle check the bullets use.
+    // the player loses a life, and subs/mines blow up when you ram them
+    void CheckHitPlayer()
+    {
+        if (contactDamage <= 0) return;
+
+        PlayerBehaviour player = PlayerBehaviour.Instance;
+        if (player == null) return;
+
+        bool touching = Vector2.Distance(transform.position, player.transform.position) < radius + player.radius;
+        if (!touching) return;
+
+        // only counts if the player isn't still blinking from the last hit
+        if (player.TakeDamage(contactDamage) && dieOnContact)
+            Die(false);
     }
 
     // steering - nudge the velocity a bit toward where we want to go every frame
@@ -99,7 +124,7 @@ public class Enemy : MonoBehaviour
 
         if (killedByPlayer)
         {
-            ScoreManager.score += points;
+            ScoreManager.AddPoints(points);  // shot it down, the player gets the points
             DropLoot();
         }
 

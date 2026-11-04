@@ -14,8 +14,7 @@ public class EnemySubAI : MonoBehaviour
     public float sightAngle = 15f;  // half the width of the vision cone, in degrees
 
     [Header("Weapon")]
-    public GameObject bulletPrefab;
-    public Transform firePoint;  // empty child at the front
+    public Transform firePoint;  // empty child at the front (bullets come from the BulletPool)
     public float fireCooldown = 1.5f;
     public AudioClip shootSound;
 
@@ -73,7 +72,7 @@ public class EnemySubAI : MonoBehaviour
 
     void Fire(PlayerBehaviour player)
     {
-        if (bulletPrefab == null) return;  // nothing assigned yet
+        if (BulletPool.Instance == null) return;  // no BulletManager in the scene
 
         Vector3 spawnPosition = firePoint != null ? firePoint.position : transform.position;
 
@@ -82,7 +81,7 @@ public class EnemySubAI : MonoBehaviour
         Vector3 toPlayer = player.transform.position - spawnPosition;
         float angle = Mathf.Atan2(toPlayer.y, toPlayer.x) * Mathf.Rad2Deg - 90f;
 
-        Instantiate(bulletPrefab, spawnPosition, Quaternion.Euler(0f, 0f, angle));
+        BulletPool.Instance.GetBullet(BulletType.Enemy, spawnPosition, Quaternion.Euler(0f, 0f, angle));
         SoundFX.Play(shootSound);
     }
 

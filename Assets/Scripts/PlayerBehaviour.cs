@@ -15,9 +15,9 @@ public class PlayerBehaviour : MonoBehaviour
     public float maxTilt = 20f;  // max lean angle
 
     [Header("Weapon")]
-    public GameObject torpedoPrefab;
     public Transform firePoint;  // empty child at the nose
     public float fireCooldown = 0.2f;  // time between shots
+    // torpedoes come from the BulletPool now, the prefab is set on the BulletFactory
 
     [Header("Getting Hit")]
     public float invincibleTime = 1f;  // how long you blink after getting hit
@@ -101,14 +101,15 @@ public class PlayerBehaviour : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, target, moveSpeed * Time.deltaTime);
     }
 
+    // grab a torpedo from the pool instead of making a new one every shot
     void Fire()
     {
-        if (torpedoPrefab == null) return;  // nothing assigned yet, ok i have made a prefab
+        if (BulletPool.Instance == null) return;  // no BulletManager in the scene
         if (Time.time < nextFireTime) return;
         nextFireTime = Time.time + fireCooldown;
 
         Vector3 spawnPosition = firePoint != null ? firePoint.position : transform.position;
-        Instantiate(torpedoPrefab, spawnPosition, Quaternion.identity);  // goes straight up
+        BulletPool.Instance.GetBullet(BulletType.Player, spawnPosition, Quaternion.identity);  // goes straight up
         SoundFX.Play(shootSound);
     }
 
@@ -136,18 +137,23 @@ public class PlayerBehaviour : MonoBehaviour
         sprite.enabled = !invincible || Mathf.Repeat(Time.time * 10f, 1f) > 0.5f;
     }
 
-    // sharks, enemy bullets and mines call this
-    public void TakeDamage(int amount)
+    // life management - sharks, mines, enemy bullets and bumping into enemies all call this.
+    // returns false if the hit didn't count (still blinking from the last one)
+    public bool TakeDamage(int amount)
     {
-        if (Time.time < invincibleUntil) return;  // still blinking, ignore it
+        if (amount <= 0) return false;
+        if (Instance != this) return false;  // already blown up
+        if (Time.time < invincibleUntil) return false;  // still blinking, ignore it
 
-        ScoreManager.lives = Mathf.Max(ScoreManager.lives - amount, 0);
+        ScoreManager.LoseLife(amount);
         SoundFX.Play(hurtSound);
 
         if (ScoreManager.lives == 0)
             Explode();
         else
             invincibleUntil = Time.time + invincibleTime;
+
+        return true;
     }
 
     void Explode()

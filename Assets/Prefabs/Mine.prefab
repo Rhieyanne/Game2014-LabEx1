@@ -109,6 +109,8 @@ MonoBehaviour:
   health: 1
   points: 50
   radius: 0.4
+  contactDamage: 1
+  dieOnContact: 1
   acceleration: 6
   lootDrops: []
   dropChance: 0

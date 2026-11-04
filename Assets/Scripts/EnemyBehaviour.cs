@@ -11,7 +11,7 @@ public class EnemyBehaviour : MonoBehaviour
 
         if (transform.position.y < -Camera.main.orthographicSize - 1f)
         {
-            ScoreManager.score += 10;
+            ScoreManager.AddPoints(10);
             pool.ReturnEnemy(gameObject);
         }
     }
@@ -20,7 +20,7 @@ public class EnemyBehaviour : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            ScoreManager.lives--;
+            ScoreManager.LoseLife();
             pool.ReturnEnemy(gameObject);
         }
     }

@@ -1,47 +1,48 @@
 using UnityEngine;
 
 // Torpedoes and enemy bullets. Flies the way it's pointing and hits whatever it touches.
+// They come from the BulletPool (built by the BulletFactory) and go back to the pool
+// when they hit something or leave the screen, instead of being destroyed.
 public class Projectile : MonoBehaviour
 {
     public float speed = 12f;
     public int damage = 1;
     public float radius = 0.2f;  // hit circle size
-    public bool firedByPlayer = true;  // on = hits enemies, off = hits the player
+    public BulletType type = BulletType.Player;  // set by the factory: Player hits enemies, Enemy hits the player
 
     void Update()
     {
         transform.position += transform.up * speed * Time.deltaTime;
 
-        if (firedByPlayer)
-            CheckHitEnemies();
-        else
-            CheckHitPlayer();
+        bool hitSomething = type == BulletType.Player ? CheckHitEnemies() : CheckHitPlayer();
 
-        if (ScreenBounds.IsOffscreen(transform.position))
-            Destroy(gameObject);
+        if (hitSomething || ScreenBounds.IsOffscreen(transform.position))
+            ReturnToPool();
     }
 
-    void CheckHitEnemies()
+    // bullet vs enemy collision - the enemy takes damage, and gives the points if this kills it
+    bool CheckHitEnemies()
     {
         foreach (Enemy enemy in Enemy.All)
         {
             if (!enemy.IsDead && IsTouching(enemy.transform.position, enemy.radius))
             {
                 enemy.TakeDamage(damage);
-                Destroy(gameObject);
-                return;  // one shot, one enemy
+                return true;  // one shot, one enemy
             }
         }
+        return false;
     }
 
-    void CheckHitPlayer()
+    bool CheckHitPlayer()
     {
         PlayerBehaviour player = PlayerBehaviour.Instance;
         if (player != null && IsTouching(player.transform.position, player.radius))
         {
             player.TakeDamage(damage);
-            Destroy(gameObject);
+            return true;
         }
+        return false;
     }
 
     // circle collision, no physics - two things touch if the distance between them
@@ -49,6 +50,14 @@ public class Projectile : MonoBehaviour
     bool IsTouching(Vector3 otherPosition, float otherRadius)
     {
         return Vector2.Distance(transform.position, otherPosition) < radius + otherRadius;
+    }
+
+    void ReturnToPool()
+    {
+        if (BulletPool.Instance != null)
+            BulletPool.Instance.ReturnBullet(this);
+        else
+            Destroy(gameObject);  // no pool in the scene, just get rid of it
     }
 
     void OnDrawGizmosSelected()

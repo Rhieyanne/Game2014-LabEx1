@@ -109,6 +109,8 @@ MonoBehaviour:
   health: 2
   points: 100
   radius: 0.5
+  contactDamage: 1
+  dieOnContact: 0
   acceleration: 6
   lootDrops:
   - {fileID: 1441758715232356139, guid: 0dd40efa7546b1ff59e9684c958064db, type: 3}

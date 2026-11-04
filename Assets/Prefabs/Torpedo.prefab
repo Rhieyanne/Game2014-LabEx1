@@ -108,4 +108,4 @@ MonoBehaviour:
   speed: 12
   damage: 1
   radius: 0.2
-  firedByPlayer: 1
+  type: 0

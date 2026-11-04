@@ -35,8 +35,8 @@ public class Pickup : MonoBehaviour
 
     void Collect()
     {
-        ScoreManager.score += points;
-        ScoreManager.lives += extraLives;
+        ScoreManager.AddPoints(points);
+        ScoreManager.AddLife(extraLives);
         SoundFX.Play(collectSound);
         Destroy(gameObject);
     }
