@@ -2012,8 +2012,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fafc31b6398401bacb813d04db20e7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BulletFactory
-  playerBulletPrefab: {fileID: 5489352127211704888, guid: 30ed24b7be6192b1e256cbf3756a5efd, type: 3}
-  enemyBulletPrefab: {fileID: 7955691012835956598, guid: f87f67adf16cffef650fe8cd69bbb2e1, type: 3}
+  playerBulletPrefab: {fileID: 5874302053658622463, guid: 30ed24b7be6192b1e256cbf3756a5efd, type: 3}
+  enemyBulletPrefab: {fileID: 4567589048687957964, guid: f87f67adf16cffef650fe8cd69bbb2e1, type: 3}
 --- !u!114 &1033712877
 MonoBehaviour:
   m_ObjectHideFlags: 0

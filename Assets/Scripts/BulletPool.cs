@@ -1,10 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Object pool for bullets - same idea as the EnemyPool from Lab 2.
-// Makes a bunch of bullets at the start and switches them on and off instead of
-// calling Instantiate / Destroy on every shot. If a queue runs out, it asks the
-// factory for one more.
 public class BulletPool : MonoBehaviour
 {
     public static BulletPool Instance { get; private set; }
